@@ -1,0 +1,9 @@
+{
+  "name": "kilo-priority-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kilo Code plugin: adds LiteLLM priority=1 to mcsprig gateway requests",
+  "dependencies": {
+    "@kilocode/plugin": "latest"
+  }
+}
