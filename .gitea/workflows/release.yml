@@ -1,0 +1,50 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-release:
+    # Change if your act_runner uses a different label (e.g. self-hosted).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Package VS Code extension
+        working-directory: vscode-extension
+        run: npx --yes @vscode/vsce package --allow-missing-repository --no-dependencies
+
+      - name: Create release and upload vsix
+        env:
+          API: ${{ github.server_url }}/api/v1/repos/${{ github.repository }}
+          TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          VERSION="${TAG#v}"
+          VSIX="vscode-extension/kilo-priority-${VERSION}.vsix"
+          if [ ! -f "$VSIX" ]; then
+            echo "Expected $VSIX - set \"version\" in vscode-extension/package.json to $VERSION and re-tag." >&2
+            exit 1
+          fi
+
+          # Reuse an existing release for this tag, otherwise create one.
+          UPLOAD=""
+          UPLOAD=$(curl -fsSL "$API/releases/tags/$TAG" | sed -n 's/.*"upload_url":"\([^"]*\)".*/\1/p') || UPLOAD=""
+          if [ -z "$UPLOAD" ]; then
+            BODY=$(printf '{"tag_name":"%s","name":"kilo-priority %s","body":"VS Code extension (.vsix). The Kilo plugin is priority.ts, curl it from the raw file route.","draft":false,"prerelease":false}' "$TAG" "$TAG")
+            UPLOAD=$(curl -fsSL -X POST -H "Authorization: token $TOKEN" -H "Content-Type: application/json" -d "$BODY" "$API/releases" | sed -n 's/.*"upload_url":"\([^"]*\)".*/\1/p') || UPLOAD=""
+          fi
+          if [ -z "$UPLOAD" ]; then
+            echo "No release upload URL. If GITHUB_TOKEN lacks release permission, add a repo secret RELEASE_TOKEN with write:repository scope." >&2
+            exit 1
+          fi
+
+          curl -fsSL -X POST -H "Authorization: token $TOKEN" -F "attachment=@$VSIX" "$UPLOAD"
+          echo "Uploaded $VSIX to release $TAG"
