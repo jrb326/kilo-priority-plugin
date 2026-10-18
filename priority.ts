@@ -23,7 +23,7 @@ import path from "node:path"
 // must never escalate it to the front of the queue.
 
 const CONFIG_FILE = path.join(os.homedir(), ".config", "kilo", "kilo-priority.json")
-const DEFAULT_TARGETS = ["litellm", "mcsprig"]
+const DEFAULT_TARGETS = ["litellm"]
 
 interface ChatParamsInput {
   model?: { providerID?: string }

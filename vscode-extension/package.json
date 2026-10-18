@@ -2,7 +2,7 @@
   "name": "kilo-priority",
   "displayName": "Kilo Priority",
   "description": "VS Code UI for per-machine LiteLLM request priority used by Kilo Code",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "jonahbray",
   "license": "MIT",
   "engines": {
@@ -53,8 +53,7 @@
             "minLength": 1
           },
           "default": [
-            "litellm",
-            "mcsprig"
+            "litellm"
           ],
           "scope": "machine",
           "description": "Lowercase substrings matched against the provider ID, provider name, and baseURL. An empty array tags nothing."

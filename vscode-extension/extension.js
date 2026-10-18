@@ -17,7 +17,7 @@ function readSettings() {
   return {
     enabled: cfg.get("enabled", true),
     priority: cfg.get("priority", 1),
-    targets: cfg.get("targets", ["litellm", "mcsprig"]),
+    targets: cfg.get("targets", ["litellm"]),
   }
 }
 

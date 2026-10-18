@@ -10,6 +10,8 @@ request. Nothing is synced across machines — the value is intentionally
 per-machine (work=1, personal=5).
 
 Requires the companion plugin installed in Kilo (`~/.config/kilo/plugin/priority.ts`).
+Matching is controlled by `kiloPriority.targets` (default `["litellm"]`); set it
+to a substring of your gateway's provider ID or baseURL if that differs.
 
 ## Usage
 
